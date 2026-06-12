@@ -1,21 +1,24 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => ({
-  plugins: [react()],
-  // GitHub Pages 部署时的 base path，本地开发时为空
-  base: process.env.VITE_BASE_PATH || '/',
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production';
+  return {
+    plugins: [react()],
+    // GitHub Pages 子路径部署
+    base: isProd ? '/zz-pdf-tools/' : '/',
+    server: {
+      port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        },
       },
     },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-  },
-}));
+    build: {
+      outDir: 'dist',
+      sourcemap: false,
+    },
+  };
+});
