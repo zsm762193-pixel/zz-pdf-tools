@@ -3,7 +3,7 @@ import useStore from '../../store/useStore';
 import PdfViewer from '../PdfViewer/PdfViewer';
 import PageManager from '../PageManager/PageManager';
 import TextEditor from '../TextEditor/TextEditor';
-import { getPdfInfo, getDownloadUrl, mergePdf } from '../../services/api';
+import { getPdfInfo, downloadEditedPdf, mergePdf } from '../../services/api';
 
 function PdfEditor({ onBack }) {
   const { currentFile, pdfInfo, setPdfInfo, pages, setPages, currentPage, setCurrentPage } = useStore();
@@ -136,13 +136,12 @@ function PdfEditor({ onBack }) {
             </label>
 
             {/* 下载 */}
-            <a
-              href={getDownloadUrl(currentFile.fileId)}
-              download
+            <button
+              onClick={() => downloadEditedPdf(currentFile.fileId)}
               className="btn-success text-xs"
             >
               💾 下载 PDF
-            </a>
+            </button>
           </div>
         </div>
 

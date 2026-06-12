@@ -35,30 +35,16 @@ function Converter() {
     setResult(null);
 
     try {
-      const blob = await convertFile(file, selectedFormat.type, (p) => {
+      const res = await convertFile(file, selectedFormat.type, (p) => {
         setProgress(p);
       });
 
-      // 模拟处理进度 60%-100%
-      setProgress(80);
-
-      // 创建下载链接
-      const url = URL.createObjectURL(blob);
-      const ext = selectedFormat.type.split('-to-')[1];
-      const downloadName = file.name.replace(/\.[^.]+$/, '') + '_converted.' + ext;
-
-      setResult({ url, name: downloadName });
       setProgress(100);
-
-      // 自动下载
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = downloadName;
-      a.click();
+      setResult({ name: res.name || 'converted' });
 
     } catch (err) {
       console.error('Convert error:', err);
-      alert('转换失败: ' + (err.response?.data?.error || err.message));
+      alert('转换失败: ' + (err.message || '未知错误'));
     } finally {
       setConverting(false);
     }
@@ -153,15 +139,6 @@ function Converter() {
               {converting ? `转换中 ${progress}%` : '🔄 开始转换'}
             </button>
 
-            {result && (
-              <a
-                href={result.url}
-                download={result.name}
-                className="btn-success"
-              >
-                💾 再次下载
-              </a>
-            )}
           </div>
 
           {/* 进度条 */}
@@ -177,13 +154,9 @@ function Converter() {
           {/* 结果提示 */}
           {result && !converting && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-              ✅ 转换完成！文件已自动下载: {result.name}
+              ✅ 转换完成！文件已处理: {result.name}
               <button
-                onClick={() => {
-                  URL.revokeObjectURL(result.url);
-                  setResult(null);
-                  setFile(null);
-                }}
+                onClick={() => { setResult(null); setFile(null); }}
                 className="ml-3 underline"
               >
                 重新转换
