@@ -86,13 +86,7 @@ function TextEditor({ fileId, containerRef, onTextEdited }) {
         originalText: selectedText.text,
       }]);
 
-      // 更新文字层的显示
-      if (selectedText.element) {
-        selectedText.element.textContent = editValue;
-        selectedText.element.dataset.text = editValue;
-        selectedText.element.style.width = `${Math.max(selectedText.width, editValue.length * selectedText.fontSize * 0.6)}px`;
-      }
-
+      // 触发 PDF 重新渲染（版本递增 → PdfViewer 整体刷新）
       if (onTextEdited) onTextEdited();
     } catch (err) {
       setError(err.response?.data?.error || '文字编辑失败');

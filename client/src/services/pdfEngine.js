@@ -8,8 +8,9 @@ import * as pdfjsLib from 'pdfjs-dist';
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
 
 // ============ 文件存储（内存） ============
-const fileStore = new Map(); // fileId -> { pdfDoc, pdfBytes, name, blobUrl }
+const fileStore = new Map(); // fileId -> { pdfDoc, pdfBytes, name, font }
 const blobUrlCache = new Map(); // fileId -> blobUrl
+const fontCache = new Map();   // fileId -> embedded font
 
 function generateId() {
   return 'pdf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
@@ -167,7 +168,13 @@ export async function editText(fileId, pageNumber, edits) {
   if (!page) throw new Error('页码超出范围');
 
   const pageHeight = page.getHeight();
-  const font = await stored.pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // 缓存字体，避免重复嵌入
+  let font = fontCache.get(fileId);
+  if (!font) {
+    font = await stored.pdfDoc.embedFont(StandardFonts.Helvetica);
+    fontCache.set(fileId, font);
+  }
 
   for (const edit of edits) {
     const pdfY = pageHeight - edit.y - edit.height;
@@ -175,8 +182,8 @@ export async function editText(fileId, pageNumber, edits) {
     page.drawRectangle({
       x: edit.x,
       y: pdfY,
-      width: edit.width,
-      height: edit.height + 2,
+      width: Math.max(edit.width, edit.text.length * (edit.fontSize || 12) * 0.7),
+      height: edit.height + 4,
       color: rgb(1, 1, 1),
     });
     // 写新文字

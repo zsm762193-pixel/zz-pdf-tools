@@ -6,7 +6,7 @@ import TextEditor from '../TextEditor/TextEditor';
 import { getPdfInfo, downloadEditedPdf, mergePdf } from '../../services/api';
 
 function PdfEditor({ onBack }) {
-  const { currentFile, pdfInfo, setPdfInfo, pages, setPages, currentPage, setCurrentPage } = useStore();
+  const { currentFile, pdfInfo, setPdfInfo, pages, setPages, currentPage, setCurrentPage, incrementPdfVersion } = useStore();
   const [showPages, setShowPages] = useState(true);
   const [merging, setMerging] = useState(false);
   const mergeInputRef = useRef(null);
@@ -23,10 +23,11 @@ function PdfEditor({ onBack }) {
         id: p.pageNumber,
         fileId: currentFile.fileId,
       })));
+      incrementPdfVersion();
     } catch (err) {
       console.error('Load PDF info error:', err);
     }
-  }, [currentFile?.fileId, setPdfInfo, setPages]);
+  }, [currentFile?.fileId, setPdfInfo, setPages, incrementPdfVersion]);
 
   useEffect(() => {
     loadPdfInfo();
@@ -39,7 +40,7 @@ function PdfEditor({ onBack }) {
 
   // 处理文字编辑完成
   const handleTextEdited = () => {
-    // 刷新 PDF 信息
+    incrementPdfVersion();
     loadPdfInfo();
   };
 

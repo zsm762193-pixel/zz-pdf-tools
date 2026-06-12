@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { getPdfRenderUrl } from '../../services/api';
+import useStore from '../../store/useStore';
 
 // 设置 PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
@@ -8,7 +9,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/b
 /**
  * PDF 页面渲染组件（单页）
  */
-function PdfPage({ fileId, pageNumber, scale = 1.5, onTextLayerReady }) {
+function PdfPage({ fileId, pageNumber, scale = 1.5, onTextLayerReady, version }) {
   const canvasRef = useRef(null);
   const textLayerRef = useRef(null);
   const containerRef = useRef(null);
@@ -74,7 +75,7 @@ function PdfPage({ fileId, pageNumber, scale = 1.5, onTextLayerReady }) {
 
     renderPage();
     return () => { cancelled = true; };
-  }, [fileId, pageNumber, scale]);
+  }, [fileId, pageNumber, scale, version]);
 
   return (
     <div ref={containerRef} className="relative inline-block shadow-lg">
@@ -91,6 +92,7 @@ function PdfViewer({ fileId, currentPage, onPageChange, onTextClick }) {
   const [totalPages, setTotalPages] = useState(0);
   const [scale, setScale] = useState(1.5);
   const pageRefs = useRef({});
+  const pdfVersion = useStore((s) => s.pdfVersion);
 
   useEffect(() => {
     const loadInfo = async () => {
@@ -148,6 +150,7 @@ function PdfViewer({ fileId, currentPage, onPageChange, onTextClick }) {
                 fileId={fileId}
                 pageNumber={i + 1}
                 scale={scale}
+                version={pdfVersion}
                 onTextLayerReady={handleTextLayerReady(i + 1)}
               />
               <div className="text-center text-xs text-gray-400 mt-1">

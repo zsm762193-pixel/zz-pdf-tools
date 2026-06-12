@@ -28,6 +28,10 @@ const useStore = create((set) => ({
   // 错误信息
   error: null,
   setError: (error) => set({ error }),
+
+  // PDF 版本号（编辑后递增，触发重新渲染）
+  pdfVersion: 0,
+  incrementPdfVersion: () => set((state) => ({ pdfVersion: state.pdfVersion + 1 })),
 }));
 
 export default useStore;
