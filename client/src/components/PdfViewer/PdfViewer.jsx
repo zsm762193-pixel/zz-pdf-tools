@@ -3,8 +3,8 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { getPdfRenderUrl } from '../../services/api';
 import useStore from '../../store/useStore';
 
-// 设置 PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
+// 设置 PDF.js worker — 使用本地版本
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
 /**
  * PDF 页面渲染组件（单页）

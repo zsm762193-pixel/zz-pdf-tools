@@ -5,7 +5,8 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
+// PDF.js worker — 使用本地 npm 包内置版本
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
 // ============ 文件存储（内存） ============
 const fileStore = new Map(); // fileId -> { pdfDoc, pdfBytes, name, font }
