@@ -1,0 +1,17 @@
+# Render Blueprint 配置
+# 在 Render 中连接 GitHub 仓库后自动识别此文件
+services:
+  - type: web
+    name: zz-pdf-tools-api
+    env: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
+      - key: PORT
+        value: "10000"
+      - key: CORS_ORIGIN
+        value: "https://你的用户名.github.io"
+    plan: free
